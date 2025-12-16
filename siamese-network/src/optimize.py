@@ -29,23 +29,19 @@ def objective(trial):
     Returns:
         Validation accuracy
     """
-    # Suggest hyperparameters
     config = Config()
-    
-    # Image and model params
+
     image_size_options = [64, 96, 128]
     image_size = trial.suggest_categorical('image_size', image_size_options)
     config.image_size = (image_size, image_size)
     
     config.embedding_dim = trial.suggest_categorical('embedding_dim', [32, 64, 128])
     config.batch_size = trial.suggest_categorical('batch_size', [4, 8, 16])
-    
-    # Training params
+
     config.learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
     config.weight_decay = trial.suggest_float('weight_decay', 1e-5, 1e-3, log=True)
     config.triplet_margin = trial.suggest_float('triplet_margin', 0.5, 2.0)
     
-    # Scheduler params
     config.scheduler_gamma = trial.suggest_float('scheduler_gamma', 0.3, 0.7)
     
     # Fixed for optuna (lightweight)
@@ -131,7 +127,6 @@ def run_optuna_study(n_trials=20, study_name='siamese_optimization'):
     print("OPTUNA HYPERPARAMETER OPTIMIZATION")
     print("=" * 60)
     print(f"Running {n_trials} trials...")
-    print("This may take a while...\n")
     
     # Create study
     study = optuna.create_study(
@@ -156,12 +151,12 @@ def run_optuna_study(n_trials=20, study_name='siamese_optimization'):
     
     # Save results to CSV
     df = study.trials_dataframe()
-    output_path = Path('optuna_results.csv')
+    output_path = Path('siamese-network/optuna-results/optuna_results.csv')
     df.to_csv(output_path, index=False)
     print(f"\n✓ Results saved to: {output_path}")
     
     # Save best params to text file
-    best_params_path = Path('best_hyperparameters.txt')
+    best_params_path = Path('siamese-network/optuna-results/best_hyperparameters.txt')
     with open(best_params_path, 'w') as f:
         f.write("Best Hyperparameters from Optuna Study\n")
         f.write("=" * 60 + "\n\n")
@@ -184,4 +179,4 @@ def run_optuna_study(n_trials=20, study_name='siamese_optimization'):
 
 if __name__ == "__main__":
     # Run optimization with 20 trials (adjust as needed)
-    run_optuna_study(n_trials=20)
+    run_optuna_study(n_trials=2)

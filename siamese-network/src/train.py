@@ -11,10 +11,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 class Trainer:
-    """
-    Trainer class for Siamese Network with comprehensive training loop.
-    """
-    
     def __init__(self, model, train_loader, val_loader, loss_fn, optimizer, 
                  scheduler, config, device):
         """
@@ -39,7 +35,6 @@ class Trainer:
         self.config = config
         self.device = device
         
-        # Training history
         self.history = {
             'train_loss': [],
             'val_loss': [],
@@ -51,10 +46,8 @@ class Trainer:
         self.best_epoch = 0
         self.best_state_dict = None
         
-        # Create checkpoint directory
         os.makedirs(config.save_dir, exist_ok=True)
         
-        # TensorBoard writer
         self.writer = SummaryWriter(log_dir='runs/siamese_network')
         print(f"✓ TensorBoard logging to: runs/siamese_network")
     
@@ -80,26 +73,18 @@ class Trainer:
             positive = positive.to(self.device)
             negative = negative.to(self.device)
             
-            # Forward pass
             self.optimizer.zero_grad()
             z_a, z_p, z_n = self.model(anchor, positive, negative, triplet_bool=True)
             
-            # Compute loss
             loss = self.loss_fn(z_a, z_p, z_n)
-            
-            # Backward pass
             loss.backward()
-            
-            # Gradient clipping to prevent exploding gradients
+
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
             
             self.optimizer.step()
             
-            # Update metrics
             batch_loss = loss.item()
             running_loss += batch_loss
-            
-            # Update progress bar
             if (batch_idx + 1) % self.config.print_every == 0:
                 progress_bar.set_postfix({'loss': f'{batch_loss:.4f}'})
         
@@ -119,7 +104,6 @@ class Trainer:
         self.model.eval()
         val_loss = 0.0
         
-        # Metrics
         genuine_correct = 0
         fake_correct = 0
         total = 0
@@ -134,34 +118,25 @@ class Trainer:
                 positive = positive.to(self.device)
                 negative = negative.to(self.device)
                 
-                # Forward pass
                 z_a, z_p, z_n = self.model(anchor, positive, negative, triplet_bool=True)
-                
-                # Compute loss
                 loss = self.loss_fn(z_a, z_p, z_n)
                 val_loss += loss.item()
                 
-                # Compute distances
                 d_ap = F.pairwise_distance(z_a, z_p)
                 d_an = F.pairwise_distance(z_a, z_n)
                 
-                # Store distances for analysis
                 all_distances_ap.extend(d_ap.cpu().tolist())
                 all_distances_an.extend(d_an.cpu().tolist())
-                
-                # Accuracy computation
                 genuine_correct += (d_ap < self.config.threshold_distance).sum().item()
                 fake_correct += (d_an >= self.config.threshold_distance).sum().item()
                 total += anchor.size(0)
         
         avg_val_loss = val_loss / len(self.val_loader)
         
-        # Calculate accuracy
         genuine_acc = genuine_correct / total if total > 0 else 0.0
         fake_acc = fake_correct / total if total > 0 else 0.0
         overall_acc = (genuine_correct + fake_correct) / (2 * total) if total > 0 else 0.0
         
-        # Distance statistics
         import numpy as np
         metrics = {
             'genuine_accuracy': genuine_acc,
@@ -227,23 +202,18 @@ class Trainer:
             print(f"Epoch {epoch+1}/{self.config.num_epochs}")
             print(f"{'='*60}")
             
-            # Train
             train_loss = self.train_one_epoch(epoch)
             
-            # Validate
             val_loss, val_acc, metrics = self.validate(epoch)
             
-            # Update learning rate
             self.scheduler.step()
             current_lr = self.optimizer.param_groups[0]['lr']
             
-            # Update history
             self.history['train_loss'].append(train_loss)
             self.history['val_loss'].append(val_loss)
             self.history['val_accuracy'].append(val_acc)
             self.history['learning_rate'].append(current_lr)
             
-            # TensorBoard logging
             self.writer.add_scalar('Loss/train', train_loss, epoch)
             self.writer.add_scalar('Loss/val', val_loss, epoch)
             self.writer.add_scalar('Accuracy/val', val_acc, epoch)
@@ -253,7 +223,6 @@ class Trainer:
             self.writer.add_scalar('Distance/fake_mean', metrics['mean_dist_fake'], epoch)
             self.writer.add_scalar('Learning_Rate', current_lr, epoch)
             
-            # Print epoch summary
             print(f"\nEpoch {epoch+1} Summary:")
             print(f"  Train Loss: {train_loss:.4f}")
             print(f"  Val Loss: {val_loss:.4f}")
@@ -262,29 +231,22 @@ class Trainer:
             print(f"  Mean Distance (Fake): {metrics['mean_dist_fake']:.4f} ± {metrics['std_dist_fake']:.4f}")
             print(f"  Learning Rate: {current_lr:.6f}")
             
-            # Save best model
             if val_acc > self.best_val_acc:
                 self.best_val_acc = val_acc
                 self.best_epoch = epoch
                 self.best_state_dict = self.model.state_dict().copy()
                 print(f"  ★ New best validation accuracy: {self.best_val_acc:.4f}")
             
-            # Save checkpoint (only best if configured)
             if not self.config.save_best_only or val_acc == self.best_val_acc:
                 self.save_checkpoint(epoch, metrics)
         
-        # Load best model
         if self.best_state_dict is not None:
             self.model.load_state_dict(self.best_state_dict)
             print(f"\n✓ Loaded best model from epoch {self.best_epoch+1}")
         
-        # Save best model separately
         self.save_best_model()
-        
-        # Close TensorBoard writer
         self.writer.close()
         
-        # Training complete
         elapsed_time = time.time() - start_time
         print("=" * 60)
         print("TRAINING COMPLETE")

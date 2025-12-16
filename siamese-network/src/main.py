@@ -20,20 +20,16 @@ def main():
     """
     Main training function.
     """
-    # Initialize configuration
     config = Config()
     config.display()
     
-    # Set device
     device = torch.device(config.device)
     print(f"\n✓ Using device: {device}")
     
-    # Set random seed
     torch.manual_seed(42)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(42)
     
-    # Download and setup data
     print("\n" + "="*60)
     print("DATA LOADING")
     print("="*60)
@@ -42,7 +38,6 @@ def main():
         signature_data_dir, config
     )
     
-    # Initialize model
     print("\n" + "="*60)
     print("MODEL INITIALIZATION")
     print("="*60)
@@ -53,14 +48,12 @@ def main():
     )
     siamese_model = SiameseNetwork(embedding_network=embedding_net).to(device)
     
-    # Print model summary using torchinfo
     print("\nModel Architecture Summary:")
     print("-" * 60)
     summary(embedding_net, input_size=(1, 3, config.image_size[0], config.image_size[1]),
             col_names=["input_size", "output_size", "num_params", "trainable"],
             depth=4, device=device)
     
-    # Setup training
     print("\n" + "="*60)
     print("TRAINING SETUP")
     print("="*60)
@@ -86,7 +79,6 @@ def main():
     print(f"Optimizer: Adam (lr={config.learning_rate})")
     print(f"Scheduler: StepLR (step={config.scheduler_step_size}, gamma={config.scheduler_gamma})")
     
-    # Train model
     print("\n" + "="*60)
     print("TRAINING")
     print("="*60)
@@ -104,7 +96,6 @@ def main():
     
     trained_model, history = trainer.train()
     
-    # Evaluate model
     print("\n" + "="*60)
     print("EVALUATION")
     print("="*60)
@@ -117,11 +108,9 @@ def main():
     )
     
     metrics = evaluator.evaluate()
-    
-    # Find optimal threshold
+
     optimal_threshold, best_accuracy, _, _ = evaluator.find_optimal_threshold()
     
-    # Final summary
     print("\n" + "="*60)
     print("TRAINING COMPLETE")
     print("="*60)

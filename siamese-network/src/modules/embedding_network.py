@@ -30,7 +30,6 @@ class SimpleEmbeddingNetwork(nn.Module):
         self.embedding_dim = embedding_dim
         self.input_size = input_size
         
-        # Convolutional blocks
         self.conv1 = self._conv_block(3, 32, kernel_size=5, padding=2)
         self.conv2 = self._conv_block(32, 64, kernel_size=5, padding=2)
         self.conv3 = self._conv_block(64, 128, kernel_size=3, padding=1)
@@ -87,19 +86,14 @@ class SimpleEmbeddingNetwork(nn.Module):
         Returns:
             L2-normalized embedding vectors of shape (batch_size, embedding_dim)
         """
-        # Convolutional feature extraction
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
         
-        # Flatten
         x = x.view(x.size(0), -1)
-        
-        # Fully connected embedding
         x = self.fc(x)
         
-        # L2 normalization for stable distance computation
         x = F.normalize(x, p=2, dim=1)
         
         return x

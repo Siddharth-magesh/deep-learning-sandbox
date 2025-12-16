@@ -51,7 +51,7 @@ class Config:
     pin_memory: bool = True if torch.cuda.is_available() else False
     
     # Checkpointing
-    save_dir: str = "./checkpoints"
+    save_dir: str = "./siamese-network/checkpoints"
     save_best_only: bool = True
     
     # Device
