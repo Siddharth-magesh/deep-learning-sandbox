@@ -27,21 +27,21 @@ class Config:
     image_std: Tuple[float, float, float] = (0.274, 0.274, 0.274)
     
     # Model Architecture
-    embedding_dim: int = 128  # Lightweight: 64, Optimal: 128-256
+    embedding_dim: int = 256  # Lightweight: 64, Optimal: 128-256
     
     # Training Hyperparameters
     batch_size: int = 32  # Lightweight: 8, Optimal: 32-64
-    num_epochs: int = 20  # Lightweight: 3, Optimal: 20-50
-    learning_rate: float = 1e-3  # Optimal: 1e-3 to 1e-4
-    weight_decay: float = 1e-4  # L2 regularization
+    num_epochs: int = 50  # Lightweight: 3, Optimal: 20-50
+    learning_rate: float = 0.0009727620885598844  # Optimal: 1e-3 to 1e-4
+    weight_decay: float = 0.00017682347633830915  # L2 regularization
     
     # Loss Function
-    triplet_margin: float = 1.0  # Optimal: 1.0-2.0
+    triplet_margin: float = 0.6835659364927866  # Optimal: 1.0-2.0
     triplet_p: int = 2  # L2 distance
     
     # Learning Rate Scheduler
     scheduler_step_size: int = 5  # Lightweight: 2, Optimal: 5-10
-    scheduler_gamma: float = 0.5  # Optimal: 0.5-0.7
+    scheduler_gamma: float = 0.39529663804858883  # Optimal: 0.5-0.7
     
     # Evaluation
     threshold_distance: float = 0.8  # Distance threshold for verification
