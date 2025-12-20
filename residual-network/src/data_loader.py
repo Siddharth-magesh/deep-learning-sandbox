@@ -2,7 +2,7 @@ import os
 import kagglehub
 from pathlib import Path
 import torch
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, Subset
 from torchvision import datasets, transforms
 
 
@@ -29,7 +29,12 @@ def download_eurosat_dataset(config):
         if not eurosat_dir.exists():
             raise FileNotFoundError(f"EuroSAT directory not found in: {dataset_path}")
         
+        class_dirs = [d for d in eurosat_dir.iterdir() if d.is_dir()]
         print(f"✓ EuroSAT directory: {eurosat_dir}")
+        print(f"✓ Found {len(class_dirs)} classes:")
+        for cls_dir in sorted(class_dirs):
+            num_files = len(list(cls_dir.glob('*.jpg')))
+            print(f"    - {cls_dir.name}: {num_files} images")
         print("=" * 60)
         
         return eurosat_dir
@@ -66,20 +71,31 @@ def create_data_loaders(config):
     
     train_transform, val_test_transform = get_transforms(config)
     
-    full_dataset = datasets.ImageFolder(root=eurosat_dir, transform=train_transform)
+    full_dataset = datasets.ImageFolder(root=str(eurosat_dir))
     
     total_size = len(full_dataset)
     train_size = int(config.train_split * total_size)
     val_size = int(config.val_split * total_size)
     test_size = total_size - train_size - val_size
     
+    print(f"\nDataset split:")
+    print(f"  Total images: {total_size}")
+    print(f"  Train: {train_size} ({config.train_split*100:.0f}%)")
+    print(f"  Validation: {val_size} ({config.val_split*100:.0f}%)")
+    print(f"  Test: {test_size} ({config.test_split*100:.0f}%)")
+    
     generator = torch.Generator().manual_seed(config.seed)
-    train_dataset, val_dataset, test_dataset = random_split(
-        full_dataset, [train_size, val_size, test_size], generator=generator
+    train_indices, val_indices, test_indices = torch.utils.data.random_split(
+        range(total_size), [train_size, val_size, test_size], generator=generator
     )
     
-    val_dataset.dataset = datasets.ImageFolder(root=eurosat_dir, transform=val_test_transform)
-    test_dataset.dataset = datasets.ImageFolder(root=eurosat_dir, transform=val_test_transform)
+    train_dataset = datasets.ImageFolder(root=str(eurosat_dir), transform=train_transform)
+    val_dataset = datasets.ImageFolder(root=str(eurosat_dir), transform=val_test_transform)
+    test_dataset = datasets.ImageFolder(root=str(eurosat_dir), transform=val_test_transform)
+    
+    train_dataset = Subset(train_dataset, train_indices.indices)
+    val_dataset = Subset(val_dataset, val_indices.indices)
+    test_dataset = Subset(test_dataset, test_indices.indices)
     
     train_loader = DataLoader(
         train_dataset,
@@ -105,10 +121,8 @@ def create_data_loaders(config):
         pin_memory=config.pin_memory
     )
     
-    print(f"✓ Train samples: {train_size}")
-    print(f"✓ Validation samples: {val_size}")
-    print(f"✓ Test samples: {test_size}")
-    print(f"✓ Classes: {full_dataset.classes}")
+    class_names = full_dataset.classes
+    print(f"\n✓ Classes ({len(class_names)}): {class_names}")
     print("=" * 60)
     
-    return train_loader, val_loader, test_loader, full_dataset.classes
+    return train_loader, val_loader, test_loader, class_names
