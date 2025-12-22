@@ -6,22 +6,25 @@ import numpy as np
 from vision_transformer import VisionTransformer
 from text_transformer import TextTransformer
 from typing import Tuple
+from config import Config
+
+config = Config()
 
 class CLIP(nn.Module):
     def __init__(
         self,
-        img_size: int = 224,
-        patch_size: int = 16,
-        vision_embed_dim: int = 768,
-        vision_depth: int = 12,
-        vision_heads: int = 12,
-        vocab_size: int = 49408,
-        text_embed_dim: int = 512,
-        max_len: int = 77,
-        text_heads: int = 8,
-        text_depth: int = 12,
-        output_dim: int = 512,
-        temperature: float = 0.07
+        img_size = config.img_size,
+        patch_size = config.patch_size,
+        vision_embed_dim = config.embed_dim,
+        vision_depth = config.depth,
+        vision_heads = config.num_heads,
+        vocab_size = config.vocab_size,
+        text_embed_dim = config.text_embed_dim,
+        max_len = config.max_len,
+        text_heads = config.text_num_heads,
+        text_depth = config.text_depth,
+        output_dim = config.text_output_dim,
+        temperature = config.temperature
     ):
         super(CLIP, self).__init__()
         self.visual = VisionTransformer(
