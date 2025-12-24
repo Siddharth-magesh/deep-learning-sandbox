@@ -1,5 +1,5 @@
 """
-Configuration file for contrastive language-image prtraining pipeline.
+Configuration file for contrastive language-image pretraining pipeline.
 All hyperparameters and settings are defined here.
 """
 
@@ -33,7 +33,7 @@ class Config:
 
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     batch_size: int = 64
-    num_epochs: int = 20
+    num_epochs: int = 50
     learning_rate: float = 1e-4
     weight_decay: float = 1e-4
     temperature: float = 0.07

@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 from pathlib import Path
@@ -6,6 +7,7 @@ from clip import CLIP, CLIPLoss
 from data_loader import get_data_loader
 from config import Config
 import time
+from torch.utils.tensorboard import SummaryWriter
 
 class Trainer:
     """Trainer class for CLIP model training."""
@@ -25,31 +27,12 @@ class Trainer:
         self.optimizer = None
         self.train_loader = None
         self.scheduler = None
+        self.writer = SummaryWriter(log_dir='runs/clip_training')
         
-    def setup_paths(self):
-        """Setup data paths for Flickr30k dataset."""
-        home_dir = Path.home()
-        kaggle_cache = home_dir / '.cache' / 'kagglehub' / 'datasets' / 'hsankesara' / 'flickr-image-dataset' / 'versions' / '1'
-        
-        if kaggle_cache.exists():
-            images_dir = kaggle_cache / 'flickr30k_images'
-            captions_file = kaggle_cache / 'results.csv'
-            
-            if images_dir.exists() and captions_file.exists():
-                return str(images_dir), str(captions_file)
-        
-        raise FileNotFoundError("Flickr30k dataset not found. Please ensure it's downloaded via kagglehub.")
-    
     def load_data(self, max_samples=None):
         """Load dataset and create data loader."""
-        images_dir, captions_file = self.setup_paths()
-        print(f"Images directory: {images_dir}")
-        print(f"Captions file: {captions_file}")
-        
         print("\nLoading dataset...")
         self.train_loader = get_data_loader(
-            images_dir, 
-            captions_file, 
             batch_size=self.config.batch_size, 
             num_workers=self.config.num_workers,
             max_samples=max_samples
@@ -80,8 +63,8 @@ class Trainer:
         total_loss = 0.0
         current_lr = self.optimizer.param_groups[0]['lr']
         
-        pbar = tqdm(self.train_loader, desc="Training", leave=True)
-        for images, captions in pbar:
+        progress_bar = tqdm(self.train_loader, desc="Training", leave=True)
+        for images, captions in progress_bar:
             images = images.to(self.device)
             captions = captions.to(self.device)
             
@@ -92,7 +75,7 @@ class Trainer:
             self.optimizer.step()
             
             total_loss += loss.item()
-            pbar.set_postfix({
+            progress_bar.set_postfix({
                 'loss': f"{loss.item():.4f}",
                 'lr': f"{current_lr:.6f}"
             })
@@ -132,9 +115,11 @@ class Trainer:
         num_epochs = epochs if epochs is not None else self.config.num_epochs
         print(f"\nStarting training for {num_epochs} epochs...\n")
         
+        start_time = time.time()
         for epoch in range(self.config.num_epochs):
             epoch_start = time.time()
             avg_loss = self.train_epoch()
+            self.writer.add_scalar('Loss/train', avg_loss, epoch)
             epoch_time = time.time() - epoch_start
             
             print(f"Epoch {epoch+1}/{self.config.num_epochs} | Loss: {avg_loss:.4f} | Time: {epoch_time:.2f}s")
@@ -142,6 +127,9 @@ class Trainer:
             self.save_checkpoint(epoch, avg_loss)
             print()
         
+        elapsed_time = time.time() - start_time
+        print(f"Total training time: {elapsed_time/60:.2f} minutes")
+        self.writer.close()
         print("Training complete!")
         return self.model
     

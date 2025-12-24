@@ -18,6 +18,22 @@ def simple_tokenizer(text: str, max_length: int = 77) -> torch.Tensor:
     return torch.tensor(arr, dtype=torch.long)
 
 def load_kaggle_flickr30k() ->  Tuple[str, str]:
+    """Load Flickr30k dataset paths from cache or download."""
+    # Check cache first
+    from pathlib import Path
+    home_dir = Path.home()
+    cache_path = home_dir / '.cache' / 'kagglehub' / 'datasets' / 'hsankesara' / 'flickr-image-dataset' / 'versions' / '1'
+    
+    if cache_path.exists():
+        image_dir = str(cache_path / 'flickr30k_images' / 'flickr30k_images')
+        caption_file = str(cache_path / 'flickr30k_images' / 'results.csv')
+        
+        if Path(image_dir).exists() and Path(caption_file).exists():
+            print(f"Using cached dataset from: {cache_path}")
+            return image_dir, caption_file
+    
+    # Download if not cached
+    print("Downloading dataset...")
     path = kagglehub.dataset_download("hsankesara/flickr-image-dataset")
     image_dir = os.path.join(path, "flickr30k_images", "flickr30k_images")
     caption_file = os.path.join(path, "flickr30k_images", "results.csv")
@@ -29,22 +45,31 @@ class Flickr30kDataset(Dataset):
         self.transform = transform
         self.max_length = max_length
 
-        df = pd.read_csv(caption_file_path, delimiter='|', engine='python')
+        # Read CSV more efficiently
+        print(f"Loading captions from {caption_file_path}...")
+        df = pd.read_csv(caption_file_path, delimiter='|', engine='python', encoding='utf-8')
         df.columns = df.columns.str.strip()
         
+        # Build image-caption pairs more efficiently using vectorized operations
         self.paired = []
-        for _, row in df.iterrows():
-            img_name = row['image_name'].strip()
-            caption = row['comment'].strip()
+        
+        # Limit dataframe early if max_samples is specified
+        if max_samples is not None:
+            # Since each image has 5 captions, limit accordingly
+            df = df.head(max_samples)
+        
+        print(f"Processing {len(df)} caption entries...")
+        
+        # Use vectorized operations instead of iterrows
+        for idx in range(len(df)):
+            img_name = df.iloc[idx]['image_name'].strip()
+            caption = str(df.iloc[idx]['comment']).strip()
             img_path = os.path.join(self.image_dir, img_name)
             
             if os.path.exists(img_path):
                 self.paired.append((img_path, caption))
         
-        if max_samples is not None and len(self.paired) > max_samples:
-            self.paired = self.paired[:max_samples]
-        
-        print(f"Loaded {len(self.paired)} image-caption pairs from {len(df['image_name'].unique())} unique images")
+        print(f"Loaded {len(self.paired)} image-caption pairs from {df['image_name'].nunique()} unique images")
 
     def __len__(self) -> int:
         return len(self.paired)

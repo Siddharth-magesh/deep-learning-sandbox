@@ -8,6 +8,10 @@ from train import Trainer
 def main():
     # Load configuration
     config = Config()
+    
+    # Fix for Windows multiprocessing issues
+    config.num_workers = 0  # Set to 0 on Windows to avoid multiprocessing issues
+    
     config.display()
     
     print(f"\nUsing device: {config.device}")
@@ -17,7 +21,7 @@ def main():
     
     try:
         # Load dataset
-        trainer.load_data(max_samples=None)  # Set max_samples for debugging
+        trainer.load_data(max_samples=1000)  # Set max_samples for debugging
         
         # Build model
         trainer.build_model()
