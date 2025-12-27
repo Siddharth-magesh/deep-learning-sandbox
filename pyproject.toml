@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "datasets>=4.4.1",
-    "huggingface-hub>=1.2.1",
+    "huggingface-hub>=0.34.0,<1.0",
     "kagglehub>=0.3.13",
     "matplotlib>=3.10.7",
     "numpy>=2.3.5",
@@ -16,9 +16,11 @@ dependencies = [
     "scikit-learn>=1.6.1",
     "tensorboard>=2.18.0",
     "torch>=2.5.0",
+    "torchaudio>=2.5.0",
     "torchinfo>=1.8.0",
     "torchvision>=0.20.0",
     "tqdm>=4.67.1",
+    "transformers>=4.57.0",
 ]
 
 # --- UV CONFIG FOR PYTORCH CUDA 12.6 ---
@@ -34,5 +36,8 @@ torch = [
     { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }
 ]
 torchvision = [
+    { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }
+]
+torchaudio = [
     { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }
 ]
