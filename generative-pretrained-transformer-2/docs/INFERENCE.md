@@ -10,7 +10,7 @@ Start an interactive session for continuous text generation:
 
 ```bash
 cd d:\ai_research_learning
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path generative-pretrained-transformer-2/checkpoints/best_model.pth \
     --interactive
 ```
@@ -26,7 +26,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 Generate text for a single prompt:
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path generative-pretrained-transformer-2/checkpoints/best_model.pth \
     --prompt "Once upon a time in a distant galaxy"
 ```
@@ -116,7 +116,7 @@ Maximum number of new tokens to generate:
 **Sampling (default):**
 ```bash
 # Uses temperature, top_k, top_p
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "Hello world"
 ```
@@ -124,7 +124,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 **Greedy Decoding:**
 ```bash
 # Always picks most likely token
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "Hello world" \
     --no_sample
@@ -153,7 +153,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 ### Creative Writing
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "In a world where magic exists" \
     --temperature 0.9 \
@@ -165,7 +165,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 ### Technical Writing
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "The algorithm works by" \
     --temperature 0.7 \
@@ -177,7 +177,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 ### Dialogue Generation
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "Person A: How are you?\nPerson B:" \
     --temperature 0.8 \
@@ -188,7 +188,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 ### Code Generation
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "def fibonacci(n):" \
     --temperature 0.5 \
@@ -200,7 +200,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 ### Story Continuation
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "The old man walked into the forest and found" \
     --temperature 1.0 \
@@ -232,7 +232,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 Concatenate previous context:
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "User: What is AI?\nAssistant: AI stands for Artificial Intelligence.\nUser: How does it work?\nAssistant:" \
     --max_new_tokens 100
@@ -243,7 +243,7 @@ python -m generative-pretrained-transformer-2.src.inference \
 Use specific formats:
 
 ```bash
-python -m generative-pretrained-transformer-2.src.inference \
+uv run python -m generative-pretrained-transformer-2.src.inference \
     --model_path checkpoints/best_model.pth \
     --prompt "Title: The Future of AI\nSummary:" \
     --temperature 0.7 \

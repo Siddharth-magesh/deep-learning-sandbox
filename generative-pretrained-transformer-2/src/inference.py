@@ -11,7 +11,7 @@ class TextGenerator:
     def __init__(self, model_path: str, device: str = 'cuda'):
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         
-        checkpoint = torch.load(model_path, map_location=self.device)
+        checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
         
         if 'config' in checkpoint:
             self.config = checkpoint['config']

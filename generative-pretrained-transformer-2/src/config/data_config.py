@@ -17,10 +17,10 @@ class DataConfig:
 @dataclass
 class InferenceConfig:
     max_new_tokens: int = 100
-    temperature: float = 0.8
+    temperature: float = 1.0  # Increased for more randomness
     top_k: int = 50
     top_p: float = 0.95
-    repetition_penalty: float = 1.2
+    repetition_penalty: float = 5.0  # Much stronger penalty to prevent repetition
     do_sample: bool = True
     num_return_sequences: int = 1
     stream: bool = True
