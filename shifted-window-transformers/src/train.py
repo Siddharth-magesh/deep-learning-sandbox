@@ -12,13 +12,6 @@ from .config import SwimConfig
 
 
 class Trainer:
-    """
-    Trainer for Swin Transformer.
-    
-    Handles the training loop with mixed precision, gradient clipping,
-    checkpointing, and TensorBoard logging.
-    """
-    
     def __init__(
         self,
         model: nn.Module,
@@ -73,7 +66,6 @@ class Trainer:
         self.start_time = None
     
     def train_epoch(self) -> tuple:
-        """Run one training epoch."""
         self.model.train()
         total_loss = 0
         correct = 0
@@ -125,7 +117,6 @@ class Trainer:
     
     @torch.no_grad()
     def validate(self) -> tuple:
-        """Run validation."""
         self.model.eval()
         total_loss = 0
         correct = 0

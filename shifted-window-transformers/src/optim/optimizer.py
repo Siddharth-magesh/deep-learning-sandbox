@@ -13,21 +13,6 @@ def build_optimizer(
     betas: tuple = (0.9, 0.999),
     layer_decay: Optional[float] = None
 ) -> torch.optim.Optimizer:
-    """
-    Build optimizer for Swin Transformer.
-    
-    Args:
-        model: PyTorch model
-        optimizer_type: Type of optimizer ('adamw' or 'sgd')
-        learning_rate: Base learning rate
-        weight_decay: Weight decay factor
-        momentum: Momentum for SGD
-        betas: Beta coefficients for AdamW
-        layer_decay: Layer-wise learning rate decay (optional)
-        
-    Returns:
-        Configured optimizer
-    """
     # Separate parameters that should/shouldn't have weight decay
     decay_params = []
     no_decay_params = []

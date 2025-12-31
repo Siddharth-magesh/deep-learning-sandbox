@@ -10,21 +10,6 @@ import math
 
 
 class WarmupCosineScheduler(_LRScheduler):
-    """
-    Cosine annealing scheduler with linear warmup.
-    
-    Learning rate starts from warmup_lr, increases linearly to base_lr during warmup,
-    then follows a cosine decay to min_lr.
-    
-    Args:
-        optimizer: PyTorch optimizer
-        warmup_epochs: Number of warmup epochs
-        total_epochs: Total training epochs
-        warmup_lr: Initial learning rate during warmup
-        min_lr: Minimum learning rate
-        last_epoch: Last epoch index
-    """
-    
     def __init__(
         self,
         optimizer: torch.optim.Optimizer,
@@ -65,20 +50,6 @@ def build_scheduler(
     min_lr: float = 1e-5,
     steps_per_epoch: int = None
 ) -> torch.optim.lr_scheduler._LRScheduler:
-    """
-    Build learning rate scheduler.
-    
-    Args:
-        optimizer: PyTorch optimizer
-        scheduler_type: Type of scheduler
-        total_epochs: Total training epochs
-        warmup_epochs: Number of warmup epochs
-        min_lr: Minimum learning rate
-        steps_per_epoch: Steps per epoch (required for OneCycleLR)
-        
-    Returns:
-        Configured scheduler
-    """
     if scheduler_type == "cosine_warmup":
         scheduler = WarmupCosineScheduler(
             optimizer,

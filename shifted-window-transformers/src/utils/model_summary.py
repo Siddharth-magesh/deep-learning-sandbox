@@ -3,13 +3,6 @@ import torch.nn as nn
 
 
 def print_model_summary(model: nn.Module, input_size: tuple = (1, 3, 224, 224)) -> None:
-    """
-    Print a summary of the model architecture.
-    
-    Args:
-        model: PyTorch model
-        input_size: Input tensor shape (batch, channels, height, width)
-    """
     print("\n" + "=" * 60)
     print("Model Summary")
     print("=" * 60)
@@ -31,15 +24,6 @@ def print_model_summary(model: nn.Module, input_size: tuple = (1, 3, 224, 224)) 
 
 
 def count_parameters_by_layer(model: nn.Module) -> dict:
-    """
-    Count parameters for each layer type.
-    
-    Args:
-        model: PyTorch model
-        
-    Returns:
-        Dictionary mapping layer types to parameter counts
-    """
     layer_params = {}
     
     for name, module in model.named_modules():

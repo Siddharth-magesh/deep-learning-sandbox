@@ -5,12 +5,6 @@ from typing import List, Optional
 
 
 class Evaluator:
-    """
-    Evaluator for Swin Transformer.
-    
-    Handles model evaluation with per-class accuracy reporting.
-    """
-    
     def __init__(
         self,
         model,
@@ -29,13 +23,6 @@ class Evaluator:
     
     @torch.no_grad()
     def evaluate(self) -> tuple:
-        """
-        Run evaluation on test set.
-        
-        Returns:
-            avg_loss: Average loss on test set
-            accuracy: Overall accuracy percentage
-        """
         total_loss = 0
         correct = 0
         total = 0
@@ -95,17 +82,6 @@ class Evaluator:
     
     @torch.no_grad()
     def get_predictions(self, loader: DataLoader = None) -> tuple:
-        """
-        Get all predictions for a dataset.
-        
-        Args:
-            loader: DataLoader to get predictions for (uses test_loader if None)
-            
-        Returns:
-            all_predictions: Tensor of predicted labels
-            all_labels: Tensor of true labels
-            all_probs: Tensor of prediction probabilities
-        """
         if loader is None:
             loader = self.test_loader
         

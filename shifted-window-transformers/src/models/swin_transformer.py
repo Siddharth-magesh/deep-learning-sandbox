@@ -70,15 +70,6 @@ class SwinStage(nn.Module):
 
 
 class SwinTransformer(nn.Module):
-    """
-    Swin Transformer: Hierarchical Vision Transformer using Shifted Windows.
-    
-    Paper: https://arxiv.org/abs/2103.14030
-    
-    Args:
-        config: SwimConfig containing all model hyperparameters
-    """
-    
     def __init__(self, config: SwimConfig) -> None:
         super().__init__()
         self.config = config
@@ -159,17 +150,6 @@ class SwinTransformer(nn.Module):
         return x
     
     def forward(self, x: torch.Tensor, labels: Optional[torch.Tensor] = None) -> tuple:
-        """
-        Forward pass.
-        
-        Args:
-            x: Input images of shape (B, C, H, W)
-            labels: Optional labels for computing loss
-            
-        Returns:
-            logits: Classification logits
-            loss: Cross-entropy loss if labels provided, else None
-        """
         x = self.forward_features(x)
         logits = self.head(x)
         

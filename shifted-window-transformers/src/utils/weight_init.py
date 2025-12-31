@@ -4,23 +4,6 @@ import math
 
 
 def trunc_normal_(tensor: torch.Tensor, mean: float = 0.0, std: float = 1.0, a: float = -2.0, b: float = 2.0) -> torch.Tensor:
-    """
-    Truncated normal initialization.
-    
-    Fills the input Tensor with values drawn from a truncated normal distribution.
-    The values are effectively drawn from the normal distribution N(mean, std^2) 
-    with values outside [a, b] redrawn until they are within the bounds.
-    
-    Args:
-        tensor: Input tensor to fill
-        mean: Mean of the normal distribution
-        std: Standard deviation of the normal distribution
-        a: Minimum cutoff value
-        b: Maximum cutoff value
-        
-    Returns:
-        Tensor filled with truncated normal values
-    """
     with torch.no_grad():
         # Method based on https://people.sc.fsu.edu/~jburkardt/presentations/truncated_normal.pdf
         def norm_cdf(x):
@@ -43,14 +26,6 @@ def trunc_normal_(tensor: torch.Tensor, mean: float = 0.0, std: float = 1.0, a: 
 
 
 def init_weights_vit(module: nn.Module, name: str = '', head_bias: float = 0.0) -> None:
-    """
-    Weight initialization for Vision Transformer / Swin Transformer.
-    
-    Args:
-        module: Module to initialize
-        name: Name of the module (for special handling)
-        head_bias: Bias initialization for the classification head
-    """
     if isinstance(module, nn.Linear):
         if 'head' in name:
             nn.init.zeros_(module.weight)
@@ -72,12 +47,6 @@ def init_weights_vit(module: nn.Module, name: str = '', head_bias: float = 0.0) 
 
 
 def init_weights_swin(model: nn.Module) -> None:
-    """
-    Initialize weights for Swin Transformer model.
-    
-    Args:
-        model: Swin Transformer model
-    """
     for name, module in model.named_modules():
         init_weights_vit(module, name)
 

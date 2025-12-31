@@ -11,7 +11,6 @@ from .utils import print_model_summary
 
 
 def train_model(args):
-    """Train the Swin Transformer model."""
     print("=" * 50)
     print("Training Swin Transformer")
     print("=" * 50)
@@ -95,7 +94,6 @@ def train_model(args):
 
 
 def evaluate_model(args):
-    """Evaluate a trained Swin Transformer model."""
     print("=" * 50)
     print("Evaluating Swin Transformer")
     print("=" * 50)
