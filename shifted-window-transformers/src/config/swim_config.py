@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
@@ -9,8 +9,8 @@ class SwimConfig:
     num_classes: int = 1000
 
     embed_dim: int = 96
-    depths: List[int] = [2, 2, 6, 2]
-    num_heads: List[int] = [3, 6, 12, 24]
+    depths: List[int] = field(default_factory=lambda: [2, 2, 6, 2])
+    num_heads: List[int] = field(default_factory=lambda: [3, 6, 12, 24])
     window_size: int = 7
     mlp_ratio: float = 4.0
     qkv_bias: bool = True
