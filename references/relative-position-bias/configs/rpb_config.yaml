@@ -1,0 +1,41 @@
+project:
+  name: "relative_position_bias"
+  seed: 42
+  device: "cuda" #cuda|cpu
+
+input:
+  batch_size: 1
+  sequence_length: 49 #window = 7*7
+  embed_dim: 96
+
+attention:
+  num_heads: 4
+  head_dim: 24 #embed_dim / num_heads
+  dropout: 0.0
+  scale: true # 1/sqrt(d_k)
+
+relative_position_bias:
+  enabled: true
+  type: "2d"
+  window_size: [7, 7]
+  learnable: true
+  init_std: 0.02
+
+absolute_position_embedding:
+  enabled: false
+  type: "learned" # sinusoidal | learned
+
+experiment:
+  compare_absolute_vs_relative_position_bias: true
+  shift_window_test: true
+  visualize_attention: true
+  visualize_bias: true
+
+visualization:
+  save_dir: "relative_position_bias/visualizations/"
+  attention_cmap: "viridis"
+  bias_cmap: "coolwarm"
+
+logging:
+  level: "INFO"
+  log_attention_stats: true
