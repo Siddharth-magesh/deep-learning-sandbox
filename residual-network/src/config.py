@@ -9,7 +9,7 @@ class Config:
     num_classes: int = 10
     img_size: int = 64
 
-    model_name: str = "resnet100"
+    model_name: str = "resnet50"
     pretrained: bool = False
 
     batch_size: int = 8 #64
@@ -34,7 +34,7 @@ class Config:
     save_dir: Path = Path("residual-network/checkpoints")
     save_best_only: bool = True
     
-    tensorboard_dir: Path = Path("residual-network/runs/resnet100")
+    tensorboard_dir: Path = None
     profiler_dir: Path = Path("residual-network/profiler_logs")
 
     log_interval: int = 10
@@ -45,6 +45,8 @@ class Config:
     def __post_init__(self):
         if self.data_dir is None:
             self.data_dir = Path.home() / ".cache" / "eurosat-dataset"
+        if self.tensorboard_dir is None:
+            self.tensorboard_dir = Path(f"residual-network/runs/{self.model_name}")
         self.save_dir.mkdir(parents=True, exist_ok=True)
         self.tensorboard_dir.mkdir(parents=True, exist_ok=True)
         self.profiler_dir.mkdir(parents=True, exist_ok=True)

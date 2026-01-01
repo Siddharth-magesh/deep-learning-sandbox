@@ -6,7 +6,7 @@ from pathlib import Path
 
 from config import Config
 from data_loader import create_data_loaders
-from resnet100 import ResNet100
+from resnet import ResNet50, ResNet100
 from train import Trainer
 from evaluate import Evaluator
 
@@ -30,7 +30,15 @@ def main():
     print("\n" + "=" * 60)
     print("MODEL INITIALIZATION")
     print("=" * 60)
-    model = ResNet100(num_classes=len(class_names), img_channels=3).to(device)
+    
+    if config.model_name.lower() == "resnet50":
+        model = ResNet50(num_classes=len(class_names), img_channels=3).to(device)
+    elif config.model_name.lower() == "resnet100":
+        model = ResNet100(num_classes=len(class_names), img_channels=3).to(device)
+    else:
+        raise ValueError(f"Unknown model: {config.model_name}. Choose 'resnet50' or 'resnet100'")
+    
+    print(f"✓ Using model: {config.model_name}")
     
     print("\nModel Summary:")
     summary(model, input_size=(config.batch_size, 3, config.img_size, config.img_size), 
@@ -90,7 +98,7 @@ def main():
     print(f"Final Test Accuracy: {results['accuracy']:.2f}%")
     print("\nResults saved in residual-network/:")
     print("  - checkpoints/")
-    print("  - runs/resnet100/ (TensorBoard logs)")
+    print(f"  - runs/{config.model_name}/ (TensorBoard logs)")
     print("  - profiler_logs/ (Profiler data)")
     print("\nTo view TensorBoard:")
     print("  tensorboard --logdir=residual-network/runs")

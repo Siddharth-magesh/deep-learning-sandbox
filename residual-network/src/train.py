@@ -25,9 +25,7 @@ class Trainer:
             'learning_rate': []
         }
         
-        tensorboard_dir = Path("residual-network/runs/resnet100")
-        tensorboard_dir.mkdir(parents=True, exist_ok=True)
-        self.writer = SummaryWriter(log_dir=str(tensorboard_dir))
+        self.writer = SummaryWriter(log_dir=str(config.tensorboard_dir))
         
         self.scaler = torch.amp.GradScaler('cuda') if config.use_amp else None
     

@@ -7,7 +7,7 @@ import pandas as pd
 
 from config import Config
 from data_loader import create_data_loaders
-from resnet100 import ResNet100
+from resnet import ResNet50, ResNet100
 
 
 def objective(trial):
@@ -26,7 +26,10 @@ def objective(trial):
     
     train_loader, val_loader, _, class_names = create_data_loaders(config)
     
-    model = ResNet100(num_classes=len(class_names), img_channels=3).to(device)
+    if config.model_name.lower() == "resnet50":
+        model = ResNet50(num_classes=len(class_names), img_channels=3).to(device)
+    else:
+        model = ResNet100(num_classes=len(class_names), img_channels=3).to(device)
     
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay)
@@ -81,7 +84,10 @@ def objective(trial):
     return best_val_acc
 
 
-def run_optuna_study(n_trials=30, study_name='resnet100_optimization'):
+def run_optuna_study(n_trials=30, study_name=None):
+    if study_name is None:
+        config = Config()
+        study_name = f'{config.model_name}_optimization'
     print("=" * 60)
     print("OPTUNA HYPERPARAMETER OPTIMIZATION")
     print("=" * 60)
