@@ -14,6 +14,7 @@ dependencies = [
     "pillow>=11.1.0",
     "pytest>=9.0.2",
     "scikit-learn>=1.6.1",
+    "seaborn>=0.13.2",
     "tensorboard>=2.18.0",
     "torch>=2.5.0",
     "torchaudio>=2.5.0",

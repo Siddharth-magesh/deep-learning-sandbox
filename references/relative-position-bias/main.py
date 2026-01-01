@@ -37,18 +37,20 @@ def main(config_path: str):
         torch.cuda.manual_seed(config['project']['seed'])
     
     window_size = tuple(config['relative_position_bias']['window_size'])
-    img_size = int(window_size[0] * window_size[1] ** 0.5)
-    patch_size = window_size[0]
+    patch_size = 16
+    img_size = window_size[0] * patch_size
+    num_patches = (img_size // patch_size) ** 2
+    seq_len = num_patches + 1
     
     rpb_kwargs = {
         'num_heads': config['attention']['num_heads'],
-        'window_size': window_size,
-        'bias_type': config['relative_position_bias']['type'],
+        'seq_len': seq_len,
+        'bias_type': '1d',
         'init_std': config['relative_position_bias']['init_std']
     }
     
     model = VisionTransformer(
-        img_size=img_size * patch_size,
+        img_size=img_size,
         patch_size=patch_size,
         in_channels=3,
         num_classes=10,
@@ -63,14 +65,14 @@ def main(config_path: str):
     
     train_dataset = SyntheticImageDataset(
         num_samples=1000,
-        img_size=img_size * patch_size,
+        img_size=img_size,
         patch_size=patch_size,
         in_channels=3
     )
     
     val_dataset = SyntheticImageDataset(
         num_samples=200,
-        img_size=img_size * patch_size,
+        img_size=img_size,
         patch_size=patch_size,
         in_channels=3
     )
