@@ -53,7 +53,7 @@ def build_scheduler(
 		)
 
 	elif name == "cosine":
-		scheduler = torch.optim.lr_scheduler.ConsineAnnealingLR(
+		scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
 			optimizer,
 			T_max=cfg.t_max,
 		)
@@ -67,6 +67,6 @@ def build_optimizer_and_scheduler(
 	sched_cfg: SchedulerConfig
 ) -> Tuple[torch.optim.Optimizer, Optional[torch.optim.lr_scheduler._LRScheduler]]:
 	optimizer = build_optimizer(model, optim_cfg)
-	scheduler = build_scheduler(model, sched_cfg)
+	scheduler = build_scheduler(optimizer, sched_cfg)
 
 	return optimizer, scheduler
