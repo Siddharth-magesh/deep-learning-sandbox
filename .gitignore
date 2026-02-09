@@ -220,3 +220,4 @@ optuna-results/
 # events.out.tfevents.*
 
 huggingface-model-handler.py
+mlartifacts/
